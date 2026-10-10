@@ -20,7 +20,7 @@ Go 包有“子目录里的包”，但没有 Java 那种“子包继承父包�
 - importpath 里的最后部分不一定等于包名。
   - 有可能整个 importpath 就是模块名而不包括相对路径，此时包就对应模块根目录本身，而且不一定是 main 包。见 [01-pkgatmod](mods/01-pkgatmod/go.mod)。
   - 若 importpath 包含相对路径，那其最后部分一定是目录名，但包名(package 语句声明)不一定等于该目录名。
-  - 代码中要使用包名而不是目录名。Go 允许二者不一致，但一般用 `import alias "importpath"` 的形式来避免引起疑惑。
+  - 代码中要使用包名而不是目录名。Go 允许二者不一致，但为避免引起疑惑，一般不要让它们不一致；非得不一致，则一般采用 `import alias "importpath"` 的书写形式。
 
 根据 importpath 寻找包：
 - 先在标准库内查找。

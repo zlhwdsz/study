@@ -1,7 +1,10 @@
 package main
 
-import "a"
+import (
+	"a"
+	. "fmt"
+)
 
 func main() {
-	println(b.B)
+	Println(b.B)
 }

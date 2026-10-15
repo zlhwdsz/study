@@ -21,11 +21,11 @@
 - 写操作和读操作也不能同时进行
 - 多个读操作却可以同时进行。
 
-互斥锁 Mutex 实现了 sync.Locker 接口（Lock() 方法 和 Unlock() 方法）
+互斥锁 *Mutex 实现了 sync.Locker 接口（Lock() 方法 和 Unlock() 方法）
 
-RWMutex 组合了 Mutex，也实现了自己的 Lock/Unlock/RLock/RUnlock 方法。
+RWMutex 组合了 w Mutex，*RWMutex 也实现了自己的 Lock/Unlock/RLock/RUnlock 方法，其 Lock/Unklock 会调用其 w 字段的相应方法+其他细节。
 
-如何获取读写锁中的读锁？(让读锁也用 Lock/Unlock 来加/解锁)
+如何获取读写锁中的读锁？(让读锁也用 Lock/Unlock 来加/解锁) rw.RLocker():
 ```go
 // RLocker returns a [Locker] interface that implements
 // the [Locker.Lock] and [Locker.Unlock] methods by calling rw.RLock and rw.RUnlock.
@@ -38,3 +38,8 @@ type rlocker RWMutex
 func (r *rlocker) Lock()   { (*RWMutex)(r).RLock() }
 func (r *rlocker) Unlock() { (*RWMutex)(r).RUnlock() }
 ```
+
+互斥锁与读写锁共同的性质：
+- 开箱即用
+- 副本（包括传参）与原值完全没有关系。
+

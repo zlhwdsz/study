@@ -33,7 +33,11 @@ wg.Add(1)
 wg.Done()
 ```
 
+另一种视角：只要计数器的值始于0又归为0，就可以被视为一个计数周期。在一个 WaitGroup 值的生命周期中，它可以经历任意多个计数周期。但是，Wait 方法的执行，不能跨越计数周期。
+
 ![](images/31-sync.WaitGroup与sync.Once-261015-200000.png)
+
+简单说：Wait 正在执行时，不能有 Add 同时执行。
 
 # sync.Once.Do(func())
 

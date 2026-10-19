@@ -164,6 +164,7 @@ got := pool.Get()
 
 - `local`：当前 GC 周期使用的主缓存；
 - `victim`：上一个 GC 周期留下的备用缓存。
+- `local` 和 `victim` 各自指向一组 `[P]poolLocal`。
 
 开始新一轮 GC 时，运行时大致会执行：
 
@@ -190,13 +191,18 @@ var bufferPool = sync.Pool{
 当前实现会按照调度器中的 P，为每个 `Pool` 建立本地缓存。每个 P 对应的本地缓存主要包含：
 
 ```go
+type poolLocal struct {
+	poolLocalInternal
+	pad [...] // 防止伪共享的填充字段
+}
+
 type poolLocalInternal struct {
 	private any
 	shared  poolChain
 }
 ```
 
-- `private`：只供当前 P 使用，访问时不需要竞争：一个 P 同时只执行一个 G，并且访问`private` 期间 G 不会被抢占或迁移到其他 P，因此两个 G 对该 P 的`private` 访问会被调度器自然串行化。
+- `private`：只供当前 P 使用，访问时不需要竞争：一个 P 同时只执行一个 G，并且访问`private` 期间 G 不会被抢占(即被调度器换下、执行同P的其他G)或G迁移到其他 P，因此两个 G 对该 P 的`private` 访问会被调度器自然串行化。
 - `shared`：当前 P 可以从头部放入、取出对象，其他 P 可以从尾部偷取对象。对 shared 的访问通过原子操作实现无锁并发安全。
 
 `Put` 的大致流程是：
@@ -207,15 +213,22 @@ type poolLocalInternal struct {
 
 `Get` 的大致流程是：
 
-1. 优先取当前 P 的 `private`；
-2. 再取当前 P 的 `shared`；
-3. 尝试从其他 P 的 `shared` 偷取；
-4. 尝试从上一轮 GC 的 `victim` 中获取；
-5. 仍然没有对象时，调用 `New` 或返回 `nil`。
+1. 当前 local:
+   1. 优先取当前 P 的 `private`；
+   2. 再取当前 P 的 `shared`，从头部 popHead;
+   3. 尝试从其他 P 的 `shared` 偷取，从尾部 popTail。
+2. 尝试从上一轮 GC 的 `victim` 中获取；
+   1. 当前 P 的 `private`；
+   2. 当前 P 的 `shared` **popTail**;
+   3. 其他 P 的 `shared` popTail。
+3. 仍然没有对象时，调用 `New` 或返回 `nil`。
 
-操作本地缓存时，运行时会短暂地将当前 goroutine 与 P 绑定，以确保找到的本地缓存不会在操作过程中发生变化。
+操作本地缓存时，运行时会短暂地将当前 goroutine 与 P 绑定（G不跑，P也不换G），以确保找到的本地缓存不会在操作过程中发生变化。
 
 这套设计让大部分 `Get`、`Put` 都只访问当前 P 的本地数据，减少了多个 goroutine 竞争同一把全局锁的情况。
+
+图示（缺少 local -> victim 的上层顺序）：
+![](images/33-sync.Pool-261018-154952.png)
 
 # 不要复制已经使用过的 Pool
 

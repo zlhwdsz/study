@@ -15,3 +15,11 @@
 动态：使用 `strings.Builder`
 
 Builder 在已被真正使用后（非零值）就禁按值复制（Builder 中的 addr 字段就是用来干这个事的），防止两个 Builder 共享缓冲区，破坏已生成字符串的不可变性。传指针是可以的。
+
+# strings.Reader
+
+Len: 未被读取部分的长度
+
+Size: 内容的总长度
+
+Size-Len: 已读计数。

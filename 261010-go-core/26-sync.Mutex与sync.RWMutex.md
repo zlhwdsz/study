@@ -43,3 +43,28 @@ func (r *rlocker) Unlock() { (*RWMutex)(r).RUnlock() }
 - 开箱即用
 - 副本（包括传参）与原值完全没有关系。
 
+# goroutine 让出 CPU 的一些场景
+
+更准确的说法: 当前 goroutine 停止占用 P，让调度器运行其他可运行的 goroutine。
+
+runtime.Gosched()：主动让出当前 P 的执行权，以允许其他 goroutine 运行(并不保证一定有其他 goroutine 被执行。)；但当前 G 仍为 runnable，不进入阻塞状态，再次被调度后继续。
+
+runtime.GC()：强制完成一次 GC，因等待垃圾回收完成而=**阻塞**当前 goroutine。等待期间其他 goroutine 可能运行，但部分 GC 阶段也可能暂停整个程序。`GC()` 可能间接使当前 goroutine 暂停运行，但这只是垃圾回收过程的结果，不是它的调度语义。
+
+mu.Lock()：仅锁竞争时：可能先短暂自旋；仍拿不到时因等待锁而**阻塞**当前 goroutine，P 可以运行其他 goroutine。
+
+time.Sleep(d): 仅`d > 0`时 ：因等待定时器而**定时阻塞(休眠)**当前 goroutine，期间 P 可以运行其他 goroutine。
+
+
+休眠是阻塞的一种特殊形式。
+- 休眠：等待一段确定时间，例如`time.Sleep(time.Second)` 。
+- 阻塞：等待某个条件成立，时间不确定，例如等待锁、channel、I/O。
+- 两者都会使当前 goroutine 暂时不能运行，并释放 P 给其他 goroutine。
+
+```text
+阻塞
+├── 等待定时器：time.Sleep
+├── 等待锁：mu.Lock
+├── 等待通信：<-ch
+└── 等待 I/O
+```

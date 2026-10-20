@@ -46,3 +46,42 @@ Context 接口并没有提供改变数据的方法。因此，在通常情况下
 
 含数据的 context 值不能直接被取消，可取消的 context 值无法直接携带数据，但它们通过 context 树联系在一起，可以间接取消/携带数据。
 
+# context vs waitgroup
+
+- `context` ：父 goroutine 通知多个子 goroutine“取消/超时”。
+  
+- `WaitGroup` ：父 goroutine 等待多个子 goroutine“全部结束”。
+
+实际的一对多协作通常组合使用：
+```go
+ctx, cancel := context.WithCancel(context.Background())
+var wg sync.WaitGroup
+
+for range 3 {
+	wg.Go(func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// 执行任务
+			}
+		}
+	})
+}
+
+// 广播停止
+cancel()
+
+// 等待所有子 goroutine 真正退出
+wg.Wait()
+```
+
+如果只调用`cancel()` ，它只发出取消信号，并不保证子 goroutine 已经退出；`wg.Wait()` 才负责确认收尾完成。
+
+简化记忆：
+```text
+context：让它们停
+WaitGroup：等它们停完
+sync.Cond：共享条件变化时，唤醒一个或多个等待者
+```

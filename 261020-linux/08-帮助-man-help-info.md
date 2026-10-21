@@ -1,4 +1,4 @@
-# man: manual。
+# man: manual
 
 查看 man 的所有章节：`man man`
 ```text
@@ -15,12 +15,12 @@
 
 查看不同章节内的同名主题：
 ```bash
-man 1 passwd
-man 5 passwd
+man 1 passwd # /usr/bin/passwd
+man 5 passwd # /etc/passwd
 man -a/--all passwd
 ```
 
-`man 内建命令`，比如 `man cd`，会打开所有内建命令(shell builtins)统一的手册：General Commands Manual。
+`man 内建命令`，比如 `man cd`，会打开所有内建命令(shell builtins)统一的手册。
 
 # help
 

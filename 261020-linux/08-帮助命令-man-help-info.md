@@ -1,6 +1,6 @@
 # man
 
-man: manual
+manual。
 
 查看 man 的所有章节：`man man`
 ```text
@@ -21,6 +21,9 @@ man 1 passwd
 man 5 passwd
 man -a/--all passwd
 ```
+
+`man 内建命令`，比如 `man cd`，会打开所有内建命令(shell builtins)统一的手册：General Commands Manual。
+
 # help
 
 shell 内建命令可用 `help cd` 的格式。内外命令都可用 `cmd --help` 的格式。

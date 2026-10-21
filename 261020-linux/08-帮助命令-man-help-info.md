@@ -1,6 +1,4 @@
-# man
-
-manual。
+# man: manual。
 
 查看 man 的所有章节：`man man`
 ```text

@@ -1,7 +1,4 @@
-# su
-
-substitue user
-
+# su: substitue user
 ```bash
 su alice   # 切换到 alice
 su - alice # 切换并加载 alice 的完整登录环境
@@ -9,14 +6,10 @@ su -       # 切换到 root
 su         # 切换到 root
 ```
 
-# pwd
-
-print working directory
+# pwd: print working directory
 - -P: 打印当前的物理(physical)目录，而不包含任何的符号链接。
 
-# ls
-
-list
+# ls: list
 - ‘-l’，‘--format=long’, ‘--format=verbose’
 - -a, --all, 不要隐藏以 . 开头的项目
 - -A, --almost-all，列出除 . 及 .. 以外的所有项目

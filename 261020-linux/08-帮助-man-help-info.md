@@ -24,7 +24,7 @@ man -a/--all passwd
 
 # help
 
-shell 内建命令可用 `help cd` 的格式。内外命令都可用 `cmd --help` 的格式。
+shell 内建命令可用 `help cd` 的格式。外部命令可用 `cmd --help` 的格式（有时内建命令也可用）。
 
 查看命令类型：`type cmd`
 

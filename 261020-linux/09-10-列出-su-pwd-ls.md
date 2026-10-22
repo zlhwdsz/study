@@ -1,13 +1,11 @@
 # su: substitue user
 
 ```bash
-su alice   # 切换到 alice
-su - alice # 切换并加载 alice 的完整登录环境
-su         # 切换到 root, 只切换用户身份，通常保留当前目录和较多原用户环境，启动 非登录 Shell 。
-su -       # 等同于`su --login` ，模拟 root 重新登录：
-# - 切换到`/root`
-# - 使用 root 的`HOME` 、`PATH` 等环境
-# - 加载 root 的登录配置文件切换并加载 root 的完整登录环境
+su alice   # 只切换用户身份(默认 root)，通常保留当前目录和较多原用户环境，启动 非登录 Shell 。
+su - alice # 切换并加载用户(默认 root)的完整登录环境，等同于`su --login，摸拟重新登录：
+# - 切换到家目录
+# - 使用用户的 的`HOME` 、`PATH` 等环境
+# - 加载用户的登录配置文件切换并加载用户的完整登录环境
 ```
 
 # pwd: print working directory

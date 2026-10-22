@@ -1,13 +1,3 @@
-# su: substitue user
-
-```bash
-su alice   # 只切换用户身份(默认 root)，通常保留当前目录和较多原用户环境，启动 非登录 Shell 。
-su - alice # 切换并加载用户(默认 root)的完整登录环境，等同于`su --login，摸拟重新登录：
-# - 切换到家目录
-# - 使用用户的 的`HOME` 、`PATH` 等环境
-# - 加载用户的登录配置文件切换并加载用户的完整登录环境
-```
-
 # pwd: print working directory
 
 - -P: 打印当前的物理(physical)目录，而不包含任何的符号链接。

@@ -34,26 +34,17 @@ class Task:
         self.maxRetries = orig_task["maxRetries"]
         self.attempts = 0
     def run(self):
-        success = True
-        result = None
-        error = ""
         while True:
             self.attempts += 1
             try:
                 result = self.tool()
+                return {"id": self.id, "status": "success", "result": result, "attempts": self.attempts}
             except Exception as e:
                 if self.attempts <= self.maxRetries:
                     continue
                 else:
-                    success = False
                     error = str(e)
-
-            if success:
-                return {"id": self.id, "status": "success", "result": result, "attempts": self.attempts}
-            else:
-                return {"id": self.id, "status": "error", "error": error, "attempts": self.attempts}
-
-
+                    return {"id": self.id, "status": "error", "error": error, "attempts": self.attempts}
 
 def build_mock_tools():
     """构造用于模拟实际业务情况的工具调用函数"""
